@@ -2,10 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
 from app.series.models import TimeSeries
-from app.series.schemas import TimeSeriesCreate, TimeSeriesResponse, MessageResponse
-from app.series.services import (create_series, delete_series, get_series, count_series, get_metrics) 
+from app.series.schemas import TimeSeriesCreate, TimeSeriesResponse, MessageResponse, MetricsResponse, CountResponse
+from app.series.services import (create_series, delete_series, count_series_by_client, get_metrics, get_series_by_client, get_series) 
+from app.core.auth import get_current_user
+from typing import List
 
-router = APIRouter(prefix="/series", tags=["timeseries"])
+router = APIRouter(prefix="/series", tags=["timeseries"], dependencies=[Depends(get_current_user)])
 
 def get_db():
     db = SessionLocal()
@@ -14,29 +16,65 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/", response_model=TimeSeriesResponse ) 
-def create_series(payload: TimeSeriesCreate, db: Session = Depends(get_db)):
-    new_series = TimeSeries(
-        name=payload.name,
-        values=payload.values
-    )
-    db.add(new_series) 
-    db.commit()
-    db.refresh(new_series)
-    return new_series
+@router.post("/", response_model=TimeSeriesResponse)
+def create_series_route(payload: TimeSeriesCreate, db: Session = Depends(get_db),current_user = Depends(get_current_user)):
+    series = create_series(db, payload)
+
+    if not series:
+        raise HTTPException(400, "Device not found")
+
+    return series
+
+@router.get("/client/{client_id}", response_model=List[TimeSeriesResponse])
+def get_series_by_client_route(client_id: int, db: Session = Depends(get_db),current_user = Depends(get_current_user)):
+    series = get_series_by_client(db, client_id)
+
+    if not series:
+        raise HTTPException(
+            status_code=404,
+            detail="No series found for this client"
+        )
+
+    return series
+
+
+@router.get("/device/{device_uid}/list", response_model=List[TimeSeriesResponse])
+def get_series_by_device_route(device_uid: str, db: Session = Depends(get_db)):
+    return db.query(TimeSeries).filter(TimeSeries.device_uid == device_uid).all()
+
+@router.get("/count/{client_id}", response_model=CountResponse)
+def count_series_route(client_id: int, db: Session = Depends(get_db)):
+    count = count_series_by_client(db, client_id)
+    return CountResponse(count=count)
+
+@router.get("/{series_id}", response_model=TimeSeriesResponse)
+def get_series_route(series_id: int, db: Session = Depends(get_db)):
+    series = get_series(db, series_id)
+    if not series:
+        raise HTTPException(status_code=404, detail="Series not found")
+    return series
+
+@router.get("/{series_id}/metrics", response_model=MetricsResponse)
+def get_metrics_route(series_id: int, db: Session = Depends(get_db)):
+    series = get_series(db, series_id)
+    if not series:
+        raise HTTPException(status_code=404, detail="Series not found")
+    
+    values = [item["value"] for item in series.values if isinstance(item.get("value"), (int, float))]
+    
+    if not values:
+        raise HTTPException(status_code=400, detail="Series has no numeric values")
+    
+    metrics = get_metrics(values)
+    return metrics
 
 @router.delete("/{series_id}", response_model=MessageResponse)
 def delete_series_route(series_id: int, db: Session = Depends(get_db), deleted_by: str = "system"):
-    success = delete_series(db, series_id)
-    print("Success", success)
-    if not success:
+    deleted_serie = delete_series(db, series_id, deleted_by)
+    if not deleted_serie:
         raise HTTPException(status_code=400, detail="Series not found")
     return MessageResponse(
         message="Series deleted successfully",
         status=True
     )
-
-@router.get("/{series_id}", response_model=TimeSeriesResponse)
-def get_series(series_id: int, db: Session = Depends(get_db)):
-    return db.query(TimeSeries).filter(TimeSeries.id == series_id,).first()
 
