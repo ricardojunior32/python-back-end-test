@@ -62,26 +62,25 @@ Isso irá iniciar um container PostgreSQL na porta 5432.
 uvicorn main:app --reload
 ```
 
-A API estará disponível em: `http://localhost:8000`
+A API estará disponível em: `http://127.0.0.1:8000`
 
 ### 7. Documentação interativa
 
 Acesse a documentação automática do FastAPI:
-- **Swagger UI**: `http://localhost:8000/docs`
-- **ReDoc**: `http://localhost:8000/redoc`
+- **Swagger UI**: `http://127.0.0.1:8000/docs`
+- **ReDoc**: `http://127.0.0.1:8000/redoc`
 
 ## 🔐 Autenticação
 
-A maioria das rotas requer autenticação via JWT. Para obter um token:
+Todas as rotas necessitam de autenticação via JWT. Para obter um token:
 
 1. Faça login em `POST /auth/login`
-2. Use o token retornado no header das requisições:
+2. Use o token retornado no Auth/Bearer token das requisições. O Token tem duração de 1hora:
    ```
    Authorization: Bearer <seu-token>
    ```
 
 ## 📚 Rotas da API
-
 ### 🔑 Autenticação (`/auth`)
 
 #### `POST /auth/login`
@@ -103,15 +102,9 @@ Realiza login e retorna um token JWT.
 }
 ```
 
-**Erros:**
-- `401`: Email ou senha inválidos
-
 ---
 
 ### 📊 Séries Temporais (`/series`)
-
-Todas as rotas de séries requerem autenticação.
-
 #### `POST /series`
 Cria uma nova série temporal com dados brutos.
 
@@ -122,13 +115,13 @@ Cria uma nova série temporal com dados brutos.
   "values": [
     {
       "value": 1.5,
-      "timestamp": "2024-01-15T10:30:00",
+      "timestamp": "2025-11-18T10:30:00",
       "quality": "good",
       "unit": "g-force"
     },
     {
       "value": 2.3,
-      "timestamp": "2024-01-15T10:31:00",
+      "timestamp": "2025-11-18T10:31:00",
       "quality": "good",
       "unit": "g-force"
     }
@@ -144,24 +137,19 @@ Cria uma nova série temporal com dados brutos.
   "values": [
     {
       "value": 1.5,
-      "timestamp": "2024-01-15T10:30:00",
+      "timestamp": "2025-11-18T10:30:00",
       "quality": "good",
       "unit": "g-force"
     }
   ],
-  "created_at": "2024-01-15T10:30:00",
-  "updated_at": "2024-01-15T10:30:00"
+  "created_at": "2025-11-18T10:30:00",
+  "updated_at": "2025-11-18T10:30:00"
 }
 ```
-
-**Erros:**
-- `400`: Device não encontrado
-
 ---
 
 #### `GET /series/{series_id}`
 Recupera uma série temporal completa pelo ID.
-
 **Parâmetros:**
 - `series_id` (int): ID da série temporal
 
@@ -171,18 +159,14 @@ Recupera uma série temporal completa pelo ID.
   "id": 1,
   "device_uid": "204262e6-c240-4207-ab61-c054f0174436",
   "values": [...],
-  "created_at": "2024-01-15T10:30:00",
-  "updated_at": "2024-01-15T10:30:00"
+  "created_at": "2025-11-18T10:30:00",
+  "updated_at": "2025-11-18T10:30:00"
 }
 ```
-
-**Erros:**
-- `404`: Série não encontrada
-
 ---
 
 #### `GET /series/{series_id}/metrics`
-Recupera métricas estatísticas de uma série temporal.
+Recupera métricas de uma série temporal .
 
 **Parâmetros:**
 - `series_id` (int): ID da série temporal
@@ -197,16 +181,10 @@ Recupera métricas estatísticas de uma série temporal.
   "count": 2
 }
 ```
-
-**Erros:**
-- `404`: Série não encontrada
-- `400`: Série não possui valores numéricos
-
 ---
 
 #### `GET /series/count/{client_id}`
 Retorna o número total de séries temporais de um cliente.
-
 **Parâmetros:**
 - `client_id` (int): ID do cliente
 
@@ -221,7 +199,6 @@ Retorna o número total de séries temporais de um cliente.
 
 #### `GET /series/client/{client_id}`
 Lista todas as séries temporais de um cliente.
-
 **Parâmetros:**
 - `client_id` (int): ID do cliente
 
@@ -237,10 +214,6 @@ Lista todas as séries temporais de um cliente.
   }
 ]
 ```
-
-**Erros:**
-- `404`: Nenhuma série encontrada para este cliente
-
 ---
 
 #### `GET /series/device/{device_uid}/list`
@@ -278,23 +251,16 @@ Deleta uma série temporal (soft delete - marca como inativa).
   "status": true
 }
 ```
-
-**Erros:**
-- `400`: Série não encontrada
-
 ---
 
 ### 📱 Dispositivos (`/devices`)
-
-Todas as rotas de dispositivos requerem autenticação.
-
 #### `POST /devices`
 Cria um novo dispositivo.
 
 **Body:**
 ```json
 {
-  "name": "Sensor TCAG - Linha 1",
+  "name": "Sensor TCAG",
   "client_id": 1,
   "sensor_type": "tcag"
 }
@@ -310,7 +276,7 @@ Cria um novo dispositivo.
 {
   "id": 1,
   "uid": "204262e6-c240-4207-ab61-c054f0174436",
-  "name": "Sensor TCAG - Linha 1",
+  "name": "Sensor TCAG",
   "client_id": 1,
   "sensor_type": "tcag"
 }
@@ -329,15 +295,11 @@ Recupera um dispositivo pelo ID.
 {
   "id": 1,
   "uid": "204262e6-c240-4207-ab61-c054f0174436",
-  "name": "Sensor TCAG - Linha 1",
+  "name": "Sensor TCAG",
   "client_id": 1,
   "sensor_type": "tcag"
 }
 ```
-
-**Erros:**
-- `404`: Dispositivo não encontrado
-
 ---
 
 #### `GET /devices/{client_id}`
@@ -352,19 +314,15 @@ Lista todos os dispositivos de um cliente.
   {
     "id": 1,
     "uid": "204262e6-c240-4207-ab61-c054f0174436",
-    "name": "Sensor TCAG - Linha 1",
+    "name": "Sensor TCAG",
     "sensor_type": "tcag",
     "client_id": 1
   }
 ]
 ```
-
 ---
 
 ### 👥 Clientes (`/clients`)
-
-Todas as rotas de clientes requerem autenticação.
-
 #### `POST /clients`
 Cria um novo cliente.
 
@@ -385,23 +343,6 @@ Cria um novo cliente.
   "email": "contato@empresa.com",
   "document": "12345678000190"
 }
-```
-
----
-
-#### `GET /clients`
-Lista todos os clientes.
-
-**Resposta (200):**
-```json
-[
-  {
-    "id": 1,
-    "name": "Empresa ABC",
-    "email": "contato@empresa.com",
-    "document": "12345678000190"
-  }
-]
 ```
 
 ---
@@ -467,7 +408,7 @@ pytest --cov=app --cov-report=html
 ### Estrutura de Testes
 
 Os testes estão organizados em:
-- `tests/conftest.py` - Fixtures compartilhadas (banco de dados de teste, clientes, etc.)
+- `tests/conftest.py` - Features compartilhadas (banco de dados de teste, clientes, etc.)
 - `tests/test_auth.py` - Testes de autenticação
 - `tests/test_series.py` - Testes de séries temporais
 - `tests/test_devices.py` - Testes de dispositivos
@@ -480,7 +421,7 @@ Os testes utilizam um banco de dados SQLite em memória, isolado para cada teste
 - Os testes não interferem uns nos outros
 - Não é necessário configurar um banco de dados separado para testes
 
-### Fixtures Disponíveis
+### Features Disponíveis
 
 - `db` - Sessão do banco de dados de teste
 - `client` - Cliente HTTP de teste (não autenticado)
@@ -490,33 +431,3 @@ Os testes utilizam um banco de dados SQLite em memória, isolado para cada teste
 - `test_client` - Cliente de teste criado automaticamente
 - `test_device` - Dispositivo de teste criado automaticamente
 - `test_series` - Série temporal de teste criada automaticamente
-
-## 📝 Notas Importantes
-
-1. **Soft Delete**: A exclusão de séries temporais é feita via soft delete (marca como inativa), não remove fisicamente do banco.
-
-2. **Autenticação**: A maioria das rotas requer autenticação JWT. Certifique-se de incluir o token no header `Authorization`.
-
-3. **Banco de Dados**: O banco é criado automaticamente na primeira execução. Se precisar recriar as tabelas, pare a aplicação e reinicie.
-
-4. **Tipos de Sensor**: Cada tipo de sensor (TCAG, TCAS, HFPLUS) possui capacidades diferentes pré-configuradas.
-
-## 🐛 Troubleshooting
-
-### Erro de conexão com o banco
-- Verifique se o Docker está rodando: `docker ps`
-- Verifique se o container PostgreSQL está ativo: `docker-compose ps`
-- Confirme a `DATABASE_URL` no arquivo `.env`
-
-### Erro de importação
-- Certifique-se de que o ambiente virtual está ativado
-- Reinstale as dependências: `pip install -r requirements.txt` (se existir)
-
-### Erro 401 Unauthorized
-- Verifique se está enviando o token JWT no header
-- Faça login novamente para obter um novo token
-
-## 📄 Licença
-
-Este projeto é privado e de propriedade da Dynamox.
-
