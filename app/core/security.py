@@ -6,7 +6,7 @@ SECRET_KEY = "ed9d139ee84c450adc48757256b86a1f66fd7829a21a24aaf40d9959c9ac4962"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-password_hash = PasswordHash.recommended()
+password_hash = PasswordHash.from_name("bcrypt")
 
 def hash_password(password: str) -> str:
     return password_hash.hash(password)
