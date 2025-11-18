@@ -36,17 +36,31 @@ venv\Scripts\activate
 ```
 
 ### 3. Instale as dependências
+
+```bash
+pip install -r requirements.txt
+```
+
+Ou instale manualmente:
 ```bash
 pip install fastapi uvicorn sqlalchemy psycopg2-binary python-dotenv pydantic[email] pwdlib PyJWT
 ```
 
 ### 4. Configure as variáveis de ambiente
 
-Crie um arquivo `.env` na raiz do projeto:
+**Para desenvolvimento local:**
 
+Copie o arquivo de exemplo e configure:
+```bash
+cp env.example .env
+```
+
+Edite o arquivo `.env` e configure a URL do banco de dados:
 ```env
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/dynamox
 ```
+
+**Importante:** O arquivo `.env` não é versionado (está no `.gitignore`). Nunca commite credenciais!
 
 ### 5. Inicie o banco de dados
 
@@ -373,6 +387,11 @@ O sistema utiliza as seguintes tabelas:
 - **clients**: Clientes
 - **devices**: Dispositivos/sensores
 - **timeseries**: Séries temporais de dados
+
+## 🚀 Deploy no Railway
+O projeto está configurado para deploy no Railway. Assim que as alterações são efetuadas e enviadas para a main o deploy é feito automático.
+
+### Link para API publica
 
 ## 🧪 Testes
 

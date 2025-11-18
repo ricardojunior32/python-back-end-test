@@ -14,10 +14,6 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/", response_model=ClientResponse)
-def create(payload: ClientCreate, db: Session = Depends(get_db)):
-    return create_client(db, payload)
-
 @router.get("/", response_model=list[ClientResponse])
 def list_all(db: Session = Depends(get_db)):
     return get_clients(db)
