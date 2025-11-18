@@ -39,7 +39,6 @@ def test_user_creation_and_verification(db):
     print(f"Verify: {verify_password(password, user.hashed_password)}")
     print(f"==================\n")
     
-    # Buscar usuário do banco
     from sqlalchemy import select
     found_user = db.query(User).filter(User.email == "test@example.com").first()
     

@@ -7,10 +7,10 @@ from fastapi import HTTPException, status
 def authenticate_user(db: Session, payload: UserLogin):
     user = get_user_by_email(db, payload.email)
     if not user:
-        return None  # Retorna None para email não encontrado
+        return None
     
     if not verify_password(payload.password, user.hashed_password):
-        return None  # Retorna None para senha incorreta também (consistência)
+        return None
     
     return user
 

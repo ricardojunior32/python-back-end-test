@@ -7,7 +7,7 @@ class Device(Base):
     __tablename__ = "devices"
 
     id = Column(Integer, primary_key=True, index=True)
-    uid = Column(String, unique=True, nullable=False)
+    uid = Column(String, unique=True, index=True, nullable=True)
     name = Column(String, nullable=True)
 
     sensor_type = Column(Enum(SensorTypeEnum), nullable=False)

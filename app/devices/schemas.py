@@ -14,7 +14,6 @@ class DevicesResponse(BaseModel):
     sensor_type: str
     client_id: int
 
-
 class DeviceCreate(DeviceBase):
     pass
 

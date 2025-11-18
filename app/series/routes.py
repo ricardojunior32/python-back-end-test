@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.core.database import SessionLocal
+from app.core.database import get_db
 from app.series.models import TimeSeries
 from app.series.schemas import TimeSeriesCreate, TimeSeriesResponse, MessageResponse, MetricsResponse, CountResponse
 from app.series.services import (create_series, delete_series, count_series_by_client, get_metrics, get_series_by_client, get_series) 
@@ -8,13 +8,6 @@ from app.core.auth import get_current_user
 from typing import List
 
 router = APIRouter(prefix="/series", tags=["timeseries"], dependencies=[Depends(get_current_user)])
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @router.post("/", response_model=TimeSeriesResponse)
 def create_series_route(payload: TimeSeriesCreate, db: Session = Depends(get_db),current_user = Depends(get_current_user)):
@@ -66,6 +59,7 @@ def get_metrics_route(series_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Series has no numeric values")
     
     metrics = get_metrics(values)
+    metrics["count"] = len(series.values)
     return metrics
 
 @router.delete("/{series_id}", response_model=MessageResponse)

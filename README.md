@@ -41,11 +41,6 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-Ou instale manualmente:
-```bash
-pip install fastapi uvicorn sqlalchemy psycopg2-binary python-dotenv pydantic[email] pwdlib PyJWT
-```
-
 ### 4. Configure as variáveis de ambiente
 
 **Para desenvolvimento local:**
@@ -391,7 +386,10 @@ O sistema utiliza as seguintes tabelas:
 ## 🚀 Deploy no Railway
 O projeto está configurado para deploy no Railway. Assim que as alterações são efetuadas e enviadas para a main o deploy é feito automático.
 
-### Link para API publica
+### Link para API publica`
+```
+python-back-end-test-production.up.railway.app
+```
 
 ## 🧪 Testes
 

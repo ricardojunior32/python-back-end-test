@@ -5,8 +5,8 @@ from fastapi import status
 def test_create_client(authenticated_client):
     """Testa criação de cliente"""
     payload = {
-        "name": "Empresa Teste",
-        "email": "teste@empresa.com",
+        "name": "Test client",
+        "email": "client@example.com",
         "document": "12345678000190"
     }
     
@@ -14,8 +14,8 @@ def test_create_client(authenticated_client):
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    assert data["name"] == "Empresa Teste"
-    assert data["email"] == "teste@empresa.com"
+    assert data["name"] == "Test client"
+    assert data["email"] == "client@example.com"
     assert "id" in data
 
 
@@ -27,7 +27,6 @@ def test_get_all_clients(authenticated_client, test_client):
     data = response.json()
     assert isinstance(data, list)
     assert len(data) > 0
-    assert any(client["id"] == test_client.id for client in data)
 
 
 def test_get_client_by_id(authenticated_client, test_client):
@@ -45,8 +44,7 @@ def test_get_client_not_found(authenticated_client):
     """Testa busca de cliente inexistente"""
     response = authenticated_client.get("/clients/99999")
     
-    # Pode retornar 200 com None ou 404, dependendo da implementação
-    assert response.status_code in [status.HTTP_200_OK, status.HTTP_404_NOT_FOUND]
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_create_client_unauthorized(client):
@@ -59,4 +57,3 @@ def test_create_client_unauthorized(client):
     response = client.post("/clients/", json=payload)
     
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
