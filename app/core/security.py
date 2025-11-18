@@ -6,19 +6,16 @@ SECRET_KEY = "ed9d139ee84c450adc48757256b86a1f66fd7829a21a24aaf40d9959c9ac4962"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-password_hash = PasswordHash.recommended()
+_pwd_hash = PasswordHash.recommended()
 
 def hash_password(password: str) -> str:
-    return password_hash.hash(password)
+    return _pwd_hash.hash(password)
 
-def verify_password(plain: str, hashed: str) -> bool:
-    return password_hash.verify(plain, hashed)
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return _pwd_hash.verify(plain_password, hashed_password)
 
 def create_access_token(data: dict, expires_minutes: int = ACCESS_TOKEN_EXPIRE_MINUTES):
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(minutes=expires_minutes)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    
-
-    

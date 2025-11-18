@@ -18,13 +18,13 @@ def get_db():
 def create(payload: DeviceCreate, db: Session = Depends(get_db)):
     return create_device(db, payload)
 
-@router.get("/{client_id}", response_model=list[DevicesResponse])
+@router.get("/client/{client_id}", response_model=list[DevicesResponse])
 def get_devices_route(client_id: str, db: Session = Depends(get_db)):
     return get_devices(db, client_id)
 
-@router.get("/{device_id}", response_model=DeviceResponse)
-def get_device_route(device_id: int, db: Session = Depends(get_db)):
+@router.get("/device/{device_id}", response_model=DeviceResponse)
+def read(device_id: int, db: Session = Depends(get_db)):
     device = get_device(db, device_id)
     if not device:
-        raise HTTPException(404, "Device not found")
+        raise HTTPException(status_code=404, detail="Device not found")
     return device

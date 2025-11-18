@@ -22,5 +22,5 @@ def create_device(db: Session, payload: DeviceCreate):
 def get_devices(db: Session, client_id: str):
     return db.query(Device).filter(Device.client_id == client_id).all()
 
-def get_device(db: Session, device_id: str):
+def get_device(db: Session, device_id: int):
     return db.query(Device).filter(Device.id == device_id).first()
