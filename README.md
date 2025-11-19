@@ -388,7 +388,7 @@ O projeto está configurado para deploy no Railway. Assim que as alterações s�
 
 ### Link para API publica`
 ```
-python-back-end-test-production.up.railway.app
+https://python-back-end-test-production.up.railway.app
 ```
 
 ## 🧪 Testes
