@@ -8,15 +8,15 @@ from app.core.database import get_db
 router = APIRouter(prefix="/clients", tags=["Clients"], dependencies=[Depends(get_current_user)])
 
 @router.post("/", response_model=ClientResponse, status_code=status.HTTP_200_OK)
-def create(payload: ClientCreate, db: Session = Depends(get_db)):
+def create_route(payload: ClientCreate, db: Session = Depends(get_db)):
     return create_client(db, payload)
 
 @router.get("/", response_model=list[ClientResponse])
-def list_all(db: Session = Depends(get_db)):
+def get_clients_route(db: Session = Depends(get_db)):
     return get_clients(db)
 
 @router.get("/{client_id}", response_model=ClientResponse)
-def read(client_id: int, db: Session = Depends(get_db)):
+def read_client_route(client_id: int, db: Session = Depends(get_db)):
     client = get_client(db, client_id)
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
