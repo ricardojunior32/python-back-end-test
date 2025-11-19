@@ -80,7 +80,7 @@ def get_series_by_client(db: Session, client_id: int):
 
     uids = [d.uid for d in devices]
 
-    series = db.query(TimeSeries).filter(TimeSeries.device_uid.in_(uids)).all()
+    series = (db.query(TimeSeries).filter(TimeSeries.device_uid.in_(uids), TimeSeries.is_active == True).all())
     return series
 
 def get_series(db: Session, series_id: int):

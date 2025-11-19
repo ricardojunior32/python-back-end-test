@@ -14,7 +14,7 @@ def create_series_route(payload: TimeSeriesCreate, db: Session = Depends(get_db)
     series = create_series(db, payload)
 
     if not series:
-        raise HTTPException(400, "Device not found")
+        raise HTTPException(400, "It was not possible to create a series.")
 
     return series
 
